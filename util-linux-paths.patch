@@ -1,0 +1,31 @@
+diff -aurN util-linux-2.22-rc2.orig/include/pathnames.h util-linux-2.22-rc2/include/pathnames.h
+--- util-linux-2.22-rc2.orig/include/pathnames.h	2012-08-18 00:17:57.849210678 +0200
++++ util-linux-2.22-rc2/include/pathnames.h	2012-08-18 00:19:23.893356435 +0200
+@@ -26,13 +26,13 @@
+ #define	_PATH_DEFPATH_ROOT	"/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin"
+ 
+ #define _PATH_SECURETTY		"/etc/securetty"
+-#define _PATH_WTMPLOCK		"/etc/wtmplock"
++#define _PATH_WTMPLOCK		"/var/lock/wtmplock"
+ 
+ #define	_PATH_HUSHLOGIN		".hushlogin"
+ #define	_PATH_HUSHLOGINS	"/etc/hushlogins"
+ 
+ #ifndef _PATH_MAILDIR
+-#define	_PATH_MAILDIR		"/var/spool/mail"
++#define	_PATH_MAILDIR		"/var/mail"
+ #endif
+ #define	_PATH_MOTDFILE		"/etc/motd"
+ #define	_PATH_NOLOGIN		"/etc/nologin"
+diff -aurN util-linux-2.22-rc2.orig/login-utils/login.1 util-linux-2.22-rc2/login-utils/login.1
+--- util-linux-2.22-rc2.orig/login-utils/login.1	2012-08-18 00:17:57.845210434 +0200
++++ util-linux-2.22-rc2/login-utils/login.1	2012-08-18 00:19:43.942091040 +0200
+@@ -272,7 +272,7 @@
+ .I /var/run/utmp
+ .I /var/log/wtmp
+ .I /var/log/lastlog
+-.I /var/spool/mail/*
++.I /var/mail/*
+ .I /etc/motd
+ .I /etc/passwd
+ .I /etc/nologin
