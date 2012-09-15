@@ -1,13 +1,11 @@
-%define		pre	rc2
-
 Summary:	Collection of basic system utilities for Linux
 Name:		util-linux
 Version:	2.22
-Release:	0.%{pre}.4
+Release:	1
 License:	GPL
 Group:		Applications/System
-Source0:	ftp://ftp.kernel.org/pub/linux/utils/util-linux/v2.22/%{name}-%{version}-%{pre}.tar.xz
-# Source0-md5:	505d71aaade14033d060373d87e4f41d
+Source0:	ftp://ftp.kernel.org/pub/linux/utils/util-linux/v2.22/%{name}-%{version}.tar.xz
+# Source0-md5:	ba2d8cc12a937231c80a04f7f7149303
 Source2:	login.pamd
 Source3:	su.pamd
 Patch0:		%{name}-paths.patch
@@ -23,6 +21,8 @@ BuildRequires:	texinfo
 BuildRequires:	zlib-devel
 Requires:	pam
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+%define		_localestatedir	/run
 
 %description
 util-linux contains a large variety of low-level system utilities
@@ -109,7 +109,7 @@ Requires:	libuuid-devel = %{version}-%{release}
 uuid static library.
 
 %prep
-%setup -qn %{name}-%{version}-%{pre}
+%setup -qn %{name}-%{version}
 %patch0 -p1
 
 %build
@@ -123,14 +123,14 @@ CPPFLAGS="%{rpmcppflags} -I/usr/include/ncurses"
 export CPPFLAGS
 %configure \
 	--disable-silent-rules		\
-	--disable-use-tty-group 	\
-	--disable-wall			\
-	--enable-kill			\
-	--enable-line			\
-	--enable-partx			\
+	--disable-use-tty-group		\
+	--enable-fs-paths-extra=/usr/bin:/usr/sbin	\
+	--enable-socket-activation	\
 	--enable-write			\
 	--without-selinux
 %{__make}
+
+#%%{__make} check
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -199,7 +199,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/ipcs
 %attr(755,root,root) %{_bindir}/isosize
 %attr(755,root,root) %{_bindir}/kill
-%attr(755,root,root) %{_bindir}/line
 %attr(755,root,root) %{_bindir}/linux*
 %attr(755,root,root) %{_bindir}/logger
 %attr(755,root,root) %{_bindir}/login
@@ -227,6 +226,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/ul
 %attr(755,root,root) %{_bindir}/unshare
 %attr(755,root,root) %{_bindir}/utmpdump
+%attr(755,root,root) %{_bindir}/wall
 %attr(755,root,root) %{_bindir}/wdctl
 %attr(755,root,root) %{_bindir}/whereis
 
@@ -298,7 +298,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/ipcrm.1*
 %{_mandir}/man1/ipcs.1*
 %{_mandir}/man1/kill.1*
-%{_mandir}/man1/line.1*
 %{_mandir}/man1/logger.1*
 %{_mandir}/man1/login.1*
 %{_mandir}/man1/look.1*
@@ -321,6 +320,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/ul.1*
 %{_mandir}/man1/unshare.1*
 %{_mandir}/man1/utmpdump.1*
+%{_mandir}/man1/wall.1*
 %{_mandir}/man1/whereis.1*
 %{_mandir}/man1/write.1*
 
