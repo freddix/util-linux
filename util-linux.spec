@@ -1,11 +1,11 @@
 Summary:	Collection of basic system utilities for Linux
 Name:		util-linux
-Version:	2.22.2
+Version:	2.23.2
 Release:	1
 License:	GPL
 Group:		Applications/System
-Source0:	ftp://ftp.kernel.org/pub/linux/utils/util-linux/v2.22/%{name}-%{version}.tar.xz
-# Source0-md5:	eeacbfdd2556acd899a2d0ffdb446185
+Source0:	ftp://ftp.kernel.org/pub/linux/utils/util-linux/v2.23/%{name}-%{version}.tar.xz
+# Source0-md5:	b39fde897334a4858bb2098edcce5b3f
 Source2:	login.pamd
 Source3:	su.pamd
 Patch0:		%{name}-paths.patch
@@ -210,6 +210,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/more
 %attr(755,root,root) %{_bindir}/mountpoint
 %attr(755,root,root) %{_bindir}/namei
+%attr(755,root,root) %{_bindir}/nsenter
 %attr(755,root,root) %{_bindir}/pg
 %attr(755,root,root) %{_bindir}/prlimit
 %attr(755,root,root) %{_bindir}/rename
@@ -218,6 +219,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/script
 %attr(755,root,root) %{_bindir}/scriptreplay
 %attr(755,root,root) %{_bindir}/setarch
+%attr(755,root,root) %{_bindir}/setpriv
 %attr(755,root,root) %{_bindir}/setsid
 %attr(755,root,root) %{_bindir}/setterm
 %attr(755,root,root) %{_bindir}/su
@@ -241,7 +243,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %ghost %{_sysconfdir}/blkid.tab
 %attr(755,root,root) %{_sbindir}/blkid
-
 %attr(755,root,root) %{_sbindir}/addpart
 %attr(755,root,root) %{_sbindir}/agetty
 %attr(755,root,root) %{_sbindir}/blockdev
@@ -278,8 +279,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_sbindir}/swapoff
 %attr(755,root,root) %{_sbindir}/swapon
 %attr(755,root,root) %{_sbindir}/switch_root
-%attr(755,root,root) %{_sbindir}/tunelp
 %attr(755,root,root) %{_sbindir}/wipefs
+%attr(755,root,root) %{_sbindir}/blkdiscard
+%attr(755,root,root) %{_sbindir}/runuser
 
 %{_mandir}/man1/cal.1*
 %{_mandir}/man1/chrt.1*
@@ -306,15 +308,19 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/more.1*
 %{_mandir}/man1/mountpoint.1*
 %{_mandir}/man1/namei.1*
+%{_mandir}/man1/nsenter.1*
 %{_mandir}/man1/pg.1*
 %{_mandir}/man1/prlimit.1*
 %{_mandir}/man1/rename.1*
 %{_mandir}/man1/renice.1*
 %{_mandir}/man1/rev.1*
+%{_mandir}/man1/runuser.1*
 %{_mandir}/man1/script.1*
 %{_mandir}/man1/scriptreplay.1*
+%{_mandir}/man1/setpriv.1*
 %{_mandir}/man1/setsid.1*
 %{_mandir}/man1/setterm.1*
+%{_mandir}/man1/su.1*
 %{_mandir}/man1/tailf.1*
 %{_mandir}/man1/taskset.1*
 %{_mandir}/man1/ul.1*
@@ -330,6 +336,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %{_mandir}/man8/addpart.8*
 %{_mandir}/man8/agetty.8*
+%{_mandir}/man8/blkdiscard.8*
 %{_mandir}/man8/blkid.8*
 %{_mandir}/man8/blockdev.8*
 %{_mandir}/man8/cfdisk.8*
@@ -343,6 +350,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/findfs.8*
 %{_mandir}/man8/findmnt.8*
 %{_mandir}/man8/fsck.8*
+%{_mandir}/man8/fsck.cramfs.8*
 %{_mandir}/man8/fsck.minix.8*
 %{_mandir}/man8/fsfreeze.8*
 %{_mandir}/man8/fstrim.8*
@@ -356,6 +364,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/lslocks.8*
 %{_mandir}/man8/mkfs.8*
 %{_mandir}/man8/mkfs.bfs.8*
+%{_mandir}/man8/mkfs.cramfs.8*
 %{_mandir}/man8/mkfs.minix.8*
 %{_mandir}/man8/mkswap.8*
 %{_mandir}/man8/mount.8*
@@ -372,7 +381,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/swapoff.8*
 %{_mandir}/man8/swapon.8*
 %{_mandir}/man8/switch_root.8*
-%{_mandir}/man8/tunelp.8*
 %{_mandir}/man8/umount.8*
 %{_mandir}/man8/uuidd.8*
 %{_mandir}/man8/wdctl.8*
