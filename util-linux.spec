@@ -1,7 +1,7 @@
 Summary:	Collection of basic system utilities for Linux
 Name:		util-linux
 Version:	2.23.2
-Release:	1
+Release:	2
 License:	GPL
 Group:		Applications/System
 Source0:	ftp://ftp.kernel.org/pub/linux/utils/util-linux/v2.23/%{name}-%{version}.tar.xz
@@ -19,7 +19,6 @@ BuildRequires:	pam-devel
 BuildRequires:	sed
 BuildRequires:	texinfo
 BuildRequires:	zlib-devel
-Requires:	pam
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_localestatedir	/run
@@ -119,8 +118,7 @@ uuid static library.
 %{__autoconf}
 %{__autoheader}
 %{__automake}
-CPPFLAGS="%{rpmcppflags} -I/usr/include/ncurses"
-export CPPFLAGS
+export CPPFLAGS="%{rpmcppflags} -I/usr/include/ncurses"
 %configure \
 	--disable-silent-rules		\
 	--disable-use-tty-group		\
@@ -139,7 +137,7 @@ install -d $RPM_BUILD_ROOT/etc/{pam.d,sysconfig,security}
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-sed -i -e 's,/usr/spool/mail,/var/mail,g' $RPM_BUILD_ROOT%{_mandir}/man1/login.1
+%{__sed} -i 's,/usr/spool/mail,/var/mail,g' $RPM_BUILD_ROOT%{_mandir}/man1/login.1
 
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/pam.d/login
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/pam.d/su
