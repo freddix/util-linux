@@ -1,7 +1,7 @@
 Summary:	Collection of basic system utilities for Linux
 Name:		util-linux
 Version:	2.23.2
-Release:	2
+Release:	4
 License:	GPL
 Group:		Applications/System
 Source0:	ftp://ftp.kernel.org/pub/linux/utils/util-linux/v2.23/%{name}-%{version}.tar.xz
