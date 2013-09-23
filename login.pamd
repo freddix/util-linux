@@ -1,9 +1,8 @@
-auth       optional     pam_faildelay.so  delay=3000000
-auth       [success=ok ignore=ignore user_unknown=ignore default=die]  pam_securetty.so
+#%PAM-1.0
 auth       requisite    pam_nologin.so
-
+auth       required     pam_securetty.so
 auth       include      common-auth
 account    include      common-account
 password   include      common-password
+session    required     pam_loginuid.so
 session    include      common-session
-

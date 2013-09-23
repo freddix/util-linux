@@ -1,13 +1,15 @@
 Summary:	Collection of basic system utilities for Linux
 Name:		util-linux
 Version:	2.23.2
-Release:	4
+Release:	5
 License:	GPL
 Group:		Applications/System
 Source0:	ftp://ftp.kernel.org/pub/linux/utils/util-linux/v2.23/%{name}-%{version}.tar.xz
 # Source0-md5:	b39fde897334a4858bb2098edcce5b3f
 Source2:	login.pamd
 Source3:	su.pamd
+Source4:	chfn.pamd
+Source5:	chsh.pamd
 Patch0:		%{name}-paths.patch
 URL:		http://userweb.kernel.org/~kzak/util-linux-ng/
 BuildRequires:	autoconf
@@ -122,8 +124,12 @@ export CPPFLAGS="%{rpmcppflags} -I/usr/include/ncurses"
 %configure \
 	--disable-silent-rules		\
 	--disable-use-tty-group		\
+	--enable-chfn-chsh		\
 	--enable-fs-paths-extra=/usr/bin:/usr/sbin	\
+	--enable-mesg			\
+	--enable-newgrp			\
 	--enable-socket-activation	\
+	--enable-vipw			\
 	--enable-write			\
 	--without-selinux
 %{__make}
@@ -142,6 +148,8 @@ install -d $RPM_BUILD_ROOT/etc/{pam.d,sysconfig,security}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/pam.d/login
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/pam.d/su
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/pam.d/su-l
+install %{SOURCE4} $RPM_BUILD_ROOT/etc/pam.d/chfn
+install %{SOURCE5} $RPM_BUILD_ROOT/etc/pam.d/chsh
 
 :> $RPM_BUILD_ROOT%{_sysconfdir}/blkid.tab
 
@@ -174,7 +182,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc NEWS
 %attr(2755,root,tty) %{_bindir}/write
+%attr(4755,root,root) %{_bindir}/chfn
+%attr(4755,root,root) %{_bindir}/chsh
 %attr(4755,root,root) %{_bindir}/mount
+%attr(4755,root,root) %{_bindir}/su
 %attr(4755,root,root) %{_bindir}/umount
 %attr(755,root,root) %{_bindir}/cal
 %attr(755,root,root) %{_bindir}/chrt
@@ -205,9 +216,11 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/lscpu
 %attr(755,root,root) %{_bindir}/lslocks
 %attr(755,root,root) %{_bindir}/mcookie
+%attr(755,root,root) %{_bindir}/mesg
 %attr(755,root,root) %{_bindir}/more
 %attr(755,root,root) %{_bindir}/mountpoint
 %attr(755,root,root) %{_bindir}/namei
+%attr(755,root,root) %{_bindir}/newgrp
 %attr(755,root,root) %{_bindir}/nsenter
 %attr(755,root,root) %{_bindir}/pg
 %attr(755,root,root) %{_bindir}/prlimit
@@ -220,7 +233,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/setpriv
 %attr(755,root,root) %{_bindir}/setsid
 %attr(755,root,root) %{_bindir}/setterm
-%attr(755,root,root) %{_bindir}/su
 %attr(755,root,root) %{_bindir}/tailf
 %attr(755,root,root) %{_bindir}/taskset
 %attr(755,root,root) %{_bindir}/ul
@@ -235,14 +247,18 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/x86_64*
 %endif
 
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/chfn
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/chsh
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/login
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/su
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/su-l
 
+
 %ghost %{_sysconfdir}/blkid.tab
-%attr(755,root,root) %{_sbindir}/blkid
 %attr(755,root,root) %{_sbindir}/addpart
 %attr(755,root,root) %{_sbindir}/agetty
+%attr(755,root,root) %{_sbindir}/blkdiscard
+%attr(755,root,root) %{_sbindir}/blkid
 %attr(755,root,root) %{_sbindir}/blockdev
 %attr(755,root,root) %{_sbindir}/cfdisk
 %attr(755,root,root) %{_sbindir}/chcpu
@@ -271,18 +287,21 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_sbindir}/readprofile
 %attr(755,root,root) %{_sbindir}/resizepart
 %attr(755,root,root) %{_sbindir}/rtcwake
+%attr(755,root,root) %{_sbindir}/runuser
 %attr(755,root,root) %{_sbindir}/sfdisk
 %attr(755,root,root) %{_sbindir}/sulogin
 %attr(755,root,root) %{_sbindir}/swaplabel
 %attr(755,root,root) %{_sbindir}/swapoff
 %attr(755,root,root) %{_sbindir}/swapon
 %attr(755,root,root) %{_sbindir}/switch_root
+%attr(755,root,root) %{_sbindir}/vigr
+%attr(755,root,root) %{_sbindir}/vipw
 %attr(755,root,root) %{_sbindir}/wipefs
-%attr(755,root,root) %{_sbindir}/blkdiscard
-%attr(755,root,root) %{_sbindir}/runuser
 
 %{_mandir}/man1/cal.1*
+%{_mandir}/man1/chfn.1*
 %{_mandir}/man1/chrt.1*
+%{_mandir}/man1/chsh.1*
 %{_mandir}/man1/col.1*
 %{_mandir}/man1/colcrt.1*
 %{_mandir}/man1/colrm.1*
@@ -303,9 +322,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/look.1*
 %{_mandir}/man1/lscpu.1*
 %{_mandir}/man1/mcookie.1*
+%{_mandir}/man1/mesg.1*
 %{_mandir}/man1/more.1*
 %{_mandir}/man1/mountpoint.1*
 %{_mandir}/man1/namei.1*
+%{_mandir}/man1/newgrp.1*
 %{_mandir}/man1/nsenter.1*
 %{_mandir}/man1/pg.1*
 %{_mandir}/man1/prlimit.1*
@@ -381,6 +402,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/switch_root.8*
 %{_mandir}/man8/umount.8*
 %{_mandir}/man8/uuidd.8*
+%{_mandir}/man8/vigr.8*
+%{_mandir}/man8/vipw.8*
 %{_mandir}/man8/wdctl.8*
 %{_mandir}/man8/wipefs.8*
 
