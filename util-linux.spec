@@ -1,11 +1,11 @@
 Summary:	Collection of basic system utilities for Linux
 Name:		util-linux
-Version:	2.23.2
-Release:	5
+Version:	2.24.2
+Release:	1
 License:	GPL
 Group:		Applications/System
-Source0:	ftp://ftp.kernel.org/pub/linux/utils/util-linux/v2.23/%{name}-%{version}.tar.xz
-# Source0-md5:	b39fde897334a4858bb2098edcce5b3f
+Source0:	ftp://ftp.kernel.org/pub/linux/utils/util-linux/v2.24/%{name}-%{version}.tar.xz
+# Source0-md5:	3f191727a0d28f7204b755cf1b6ea0aa
 Source2:	login.pamd
 Source3:	su.pamd
 Source4:	chfn.pamd
@@ -109,6 +109,15 @@ Requires:	libuuid-devel = %{version}-%{release}
 %description -n libuuid-static
 uuid static library.
 
+%package -n uuid
+Summary:	Daemon for generating UUIDs
+Group:		Applications/System
+Requires:	libuuid = %{version}-%{release}
+Requires:	systemd
+
+%description -n uuid
+Daemon for generating UUIDs.
+
 %prep
 %setup -qn %{name}-%{version}
 %patch0 -p1
@@ -158,7 +167,7 @@ echo '.so hwclock.8' > $RPM_BUILD_ROOT%{_mandir}/man8/clock.8
 
 %find_lang %{name}
 
-rm -f $RPM_BUILD_ROOT%{_infodir}/dir
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/*.la
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -208,6 +217,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/ipcs
 %attr(755,root,root) %{_bindir}/isosize
 %attr(755,root,root) %{_bindir}/kill
+%attr(755,root,root) %{_bindir}/last
+%attr(755,root,root) %{_bindir}/lastb
 %attr(755,root,root) %{_bindir}/linux*
 %attr(755,root,root) %{_bindir}/logger
 %attr(755,root,root) %{_bindir}/login
@@ -241,7 +252,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/wall
 %attr(755,root,root) %{_bindir}/wdctl
 %attr(755,root,root) %{_bindir}/whereis
-
 %ifarch %{x8664}
 %attr(755,root,root) %{_bindir}/x86_64
 %{_mandir}/man8/x86_64*
@@ -281,6 +291,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_sbindir}/mkfs.cramfs
 %attr(755,root,root) %{_sbindir}/mkfs.minix
 %attr(755,root,root) %{_sbindir}/mkswap
+%attr(755,root,root) %{_sbindir}/nologin
 %attr(755,root,root) %{_sbindir}/partx
 %attr(755,root,root) %{_sbindir}/pivot_root
 %attr(755,root,root) %{_sbindir}/raw
@@ -317,6 +328,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/ipcrm.1*
 %{_mandir}/man1/ipcs.1*
 %{_mandir}/man1/kill.1*
+%{_mandir}/man1/last.1*
+%{_mandir}/man1/lastb.1*
 %{_mandir}/man1/logger.1*
 %{_mandir}/man1/login.1*
 %{_mandir}/man1/look.1*
@@ -387,6 +400,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/mkfs.minix.8*
 %{_mandir}/man8/mkswap.8*
 %{_mandir}/man8/mount.8*
+%{_mandir}/man8/nologin.8*
 %{_mandir}/man8/partx.8*
 %{_mandir}/man8/pivot_root.8*
 %{_mandir}/man8/raw.8.gz
@@ -455,9 +469,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_libdir}/libuuid.a
 
-%if 0
+%files -n uuid
 %attr(755,root,root) %{_sbindir}/uuidd
-/usr/lib/systemd/system/uuidd.service
-/usr/lib/systemd/system/uuidd.socket
-%endif
+%{systemdunitdir}/uuidd.service
+%{systemdunitdir}/uuidd.socket
 
