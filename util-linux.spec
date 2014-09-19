@@ -1,24 +1,30 @@
+# based on PLD Linux spec git://git.pld-linux.org/packages/util-linux.git
+
+# TODO: python bindings unpackaged
+
 Summary:	Collection of basic system utilities for Linux
 Name:		util-linux
-Version:	2.24.2
+Version:	2.25.1
 Release:	1
 License:	GPL
 Group:		Applications/System
-Source0:	ftp://ftp.kernel.org/pub/linux/utils/util-linux/v2.24/%{name}-%{version}.tar.xz
-# Source0-md5:	3f191727a0d28f7204b755cf1b6ea0aa
+Source0:	ftp://ftp.kernel.org/pub/linux/utils/util-linux/v2.25/%{name}-%{version}.tar.xz
+# Source0-md5:	2ff36a8f8ede70f66c5ad0fb09e40e79
 Source2:	login.pamd
 Source3:	su.pamd
 Source4:	chfn.pamd
 Source5:	chsh.pamd
 Patch0:		%{name}-paths.patch
-URL:		http://userweb.kernel.org/~kzak/util-linux-ng/
+URL:		http://www.kernel.org/pub/linux/utils/util-linux/
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	gettext-devel
 BuildRequires:	intltool
+BuildRequires:	libcap-ng-devel
 BuildRequires:	ncurses-devel
 BuildRequires:	pam-devel
 BuildRequires:	sed
+BuildRequires:	systemd-devel
 BuildRequires:	texinfo
 BuildRequires:	zlib-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -54,6 +60,9 @@ Summary:	blkid static library
 Group:		Development/Libraries
 Requires:	libblkid-devel = %{version}-%{release}
 
+%description -n libblkid-static
+Static version of blkid library.
+
 %package -n libmount
 Summary:	Library to handle mounting-related tasks
 License:	LGPL
@@ -82,9 +91,21 @@ Requires:	libmount-devel = %{version}-%{release}
 %description -n libmount-static
 Static version of mount library.
 
+%package -n libsmartcols
+Summary:	smartcols library
+License:	LGPL
+Group:		Libraries
 
-%description -n libblkid-static
-blkid static library.
+%description -n libsmartcols
+smartcols library.
+
+%package -n libsmartcols-devel
+Summary:	Header files for smartcols library
+License:	LGPL
+Group:		Development/Libraries
+
+%description -n libsmartcols-devel
+Header files for smartcols library.
 
 %package -n libuuid
 Summary:	Library for accessing and manipulating UUID
@@ -117,6 +138,14 @@ Requires:	systemd
 
 %description -n uuid
 Daemon for generating UUIDs.
+
+%package -n bash-completion-%{name}
+Summary:        BASH auto-complete site functions
+Group:          Documentation
+Requires:       bash
+
+%description -n bash-completion-%{name}
+BASH auto-complete site functions.
 
 %prep
 %setup -qn %{name}-%{version}
@@ -184,6 +213,9 @@ rm -rf $RPM_BUILD_ROOT
 %post	-n libmount -p /usr/sbin/ldconfig
 %postun -n libmount -p /usr/sbin/ldconfig
 
+%post	-n libsmartcols -p /usr/sbin/ldconfig
+%postun -n libsmartcols -p /usr/sbin/ldconfig
+
 %post	-n libuuid -p /usr/sbin/ldconfig
 %postun	-n libuuid -p /usr/sbin/ldconfig
 
@@ -202,7 +234,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/colcrt
 %attr(755,root,root) %{_bindir}/colrm
 %attr(755,root,root) %{_bindir}/column
-%attr(755,root,root) %{_bindir}/cytune
 %attr(755,root,root) %{_bindir}/dmesg
 %attr(755,root,root) %{_bindir}/eject
 %attr(755,root,root) %{_bindir}/fallocate
@@ -226,6 +257,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/lsblk
 %attr(755,root,root) %{_bindir}/lscpu
 %attr(755,root,root) %{_bindir}/lslocks
+%attr(755,root,root) %{_bindir}/lslogins
 %attr(755,root,root) %{_bindir}/mcookie
 %attr(755,root,root) %{_bindir}/mesg
 %attr(755,root,root) %{_bindir}/more
@@ -247,6 +279,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/tailf
 %attr(755,root,root) %{_bindir}/taskset
 %attr(755,root,root) %{_bindir}/ul
+%attr(755,root,root) %{_bindir}/uname26
 %attr(755,root,root) %{_bindir}/unshare
 %attr(755,root,root) %{_bindir}/utmpdump
 %attr(755,root,root) %{_bindir}/wall
@@ -262,7 +295,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/login
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/su
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/su-l
-
 
 %ghost %{_sysconfdir}/blkid.tab
 %attr(755,root,root) %{_sbindir}/addpart
@@ -309,6 +341,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_sbindir}/vipw
 %attr(755,root,root) %{_sbindir}/wipefs
 
+%{systemdunitdir}/fstrim.service
+%{systemdunitdir}/fstrim.timer
+
 %{_mandir}/man1/cal.1*
 %{_mandir}/man1/chfn.1*
 %{_mandir}/man1/chrt.1*
@@ -334,6 +369,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/login.1*
 %{_mandir}/man1/look.1*
 %{_mandir}/man1/lscpu.1*
+%{_mandir}/man1/lslogins.1*
 %{_mandir}/man1/mcookie.1*
 %{_mandir}/man1/mesg.1*
 %{_mandir}/man1/more.1*
@@ -365,6 +401,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/libblkid.3*
 
 %{_mandir}/man5/fstab.5*
+%{_mandir}/man5/terminal-colors.d.5*
 
 %{_mandir}/man8/addpart.8*
 %{_mandir}/man8/agetty.8*
@@ -375,7 +412,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/chcpu.8*
 %{_mandir}/man8/clock.8*
 %{_mandir}/man8/ctrlaltdel.8*
-%{_mandir}/man8/cytune.8*
 %{_mandir}/man8/delpart.8*
 %{_mandir}/man8/fdformat.8*
 %{_mandir}/man8/fdisk.8*
@@ -451,6 +487,17 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_libdir}/libmount.a
 
+%files -n libsmartcols
+%defattr(644,root,root,755)
+%attr(755,root,root) %ghost %{_libdir}/libsmartcols.so.1
+%attr(755,root,root) %{_libdir}/libsmartcols.so.*.*.*
+
+%files -n libsmartcols-devel
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libsmartcols.so
+%{_includedir}/libsmartcols
+%{_pkgconfigdir}/smartcols.pc
+
 %files -n libuuid
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/uuidgen
@@ -473,4 +520,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_sbindir}/uuidd
 %{systemdunitdir}/uuidd.service
 %{systemdunitdir}/uuidd.socket
+
+%files -n bash-completion-%{name}
+%attr(755,root,root)
+%{_datadir}/bash-completion/completions/*
 
