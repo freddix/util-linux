@@ -4,12 +4,12 @@
 
 Summary:	Collection of basic system utilities for Linux
 Name:		util-linux
-Version:	2.25.1
+Version:	2.25.2
 Release:	1
 License:	GPL
 Group:		Applications/System
 Source0:	ftp://ftp.kernel.org/pub/linux/utils/util-linux/v2.25/%{name}-%{version}.tar.xz
-# Source0-md5:	2ff36a8f8ede70f66c5ad0fb09e40e79
+# Source0-md5:	cab3d7be354000f629bc601238b629b3
 Source2:	login.pamd
 Source3:	su.pamd
 Source4:	chfn.pamd
